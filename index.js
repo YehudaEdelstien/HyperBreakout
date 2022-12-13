@@ -16,29 +16,31 @@ window.onload = () => {
         radius: 10,
         xPos: 10,
         yPos: canvas.height - 10,
-        xSpeed: 3,
-        ySpeed: -3
+        xSpeed: 5,
+        ySpeed: -5
     }
 
     function Brick(x, y) {
-        this.xPos = x;
-        this.yPos = y;
-        this.width = 50;
-        this.height = 30;
+        this.xPos = x + 2;
+        this.yPos = y + 1;
+        this.width = 47;
+        this.height = 27;
         this.isActive = true;
     }
 
-    const brickYGap = 40;
-    const brickXGap = 60;
+    const brickYGap = 30;
+    const brickXGap = 50;
 
     const bricks = [];
 
-    for (let i = 1; i < 10; i++) {
-        for (let j = 1; j < 4; j++) {
+    for (let i = -10; i < 4; i++) {
+        for (let j = 0; j < 5; j++) {
             bricks.push(new Brick(j * brickXGap, i * brickYGap))
         }
     }
 
+    let brickFallTimer = 0;
+    const brickFallSpeed = 0.2;
     // input
     const mousePos = {
         x: 0,
@@ -60,7 +62,9 @@ window.onload = () => {
     function drawBrick(x, y, w, h) {
         ctx.beginPath();
         ctx.rect(x, y, w, h);
+        ctx.strokeStyle = "blue";
         ctx.stroke();
+        ctx.fill();
         ctx.closePath();
     }
 
@@ -72,10 +76,10 @@ window.onload = () => {
     }
 
     function checkCollisions() {
-        if (ball.xPos < 0 + ball.radius || ball.xPos > canvas.width - ball.radius) {
+        if (ball.xPos - ball.radius < 0 || ball.xPos + ball.radius > canvas.width) {
             ball.xSpeed *= -1;
         }
-        if (ball.yPos < 0 + ball.radius || ball.yPos > canvas.height - ball.radius) {
+        if (ball.yPos - ball.radius < 0 /*|| ball.yPos + ball.radius > canvas.height*/) {
             ball.ySpeed *= -1;
         }
 
@@ -87,18 +91,23 @@ window.onload = () => {
                 ball.xPos + ball.radius > b.xPos &&
                 ball.xPos - ball.radius < b.xPos + b.width &&
                 ball.yPos + ball.radius > b.yPos &&
-                ball.yPos - ball.radius < b.yPos + b.height
-            ) {
+                ball.yPos - ball.radius < b.yPos + b.height) {
                 b.isActive = false;
                 ball.ySpeed *= -1;
             }
         });
+
+        if (ball.yPos + ball.radius >= paddle.yPos && ball.yPos - ball.radius <= paddle.yPos + paddle.height && ball.ySpeed > 0) {
+            if (ball.xPos + ball.radius >= paddle.xPos && ball.xPos - ball.radius <= paddle.xPos + paddle.width) {
+                ball.ySpeed *= -1;
+            }
+        }
     }
 
     function updatePaddle() {
         if (mousePos.x < 0 + (paddle.width / 2)) {
             paddle.xPos = 0;
-        } else if (mousePos.x > canvas.width - (paddle.width / 2)){
+        } else if (mousePos.x > canvas.width - (paddle.width / 2)) {
             paddle.xPos = canvas.width - paddle.width;
         } else {
             paddle.xPos = mousePos.x - (paddle.width / 2);
@@ -120,6 +129,12 @@ window.onload = () => {
                 drawBrick(b.xPos, b.yPos, b.width, b.height);
             }
         });
+
+        brickFallTimer += brickFallSpeed;
+        if (brickFallTimer >= 1){
+            bricks.forEach(b => b.yPos++)
+            brickFallTimer--;
+        }
     }
 
     function mainLoop() {
