@@ -7,7 +7,6 @@ window.onload = () => {
     const paddle = {
         xPos: 0,
         yPos: canvas.height - 15,
-        speed: 10,
         height: 8,
         width: 60
     }
