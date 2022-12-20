@@ -13,3 +13,7 @@ canvas {
     margin-top: 5%;
     display: block;
 }
+
+canvas:hover {
+    cursor: none;
+}

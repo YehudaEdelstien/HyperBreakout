@@ -13,10 +13,12 @@ window.onload = () => {
 
     const ball = {
         radius: 10,
-        xPos: 10,
-        yPos: canvas.height - 10,
-        xSpeed: 5,
-        ySpeed: -5,
+        xPos: canvas.width / 2,
+        yPos: canvas.height - 5,
+        angle: 0.5 / 2 * Math.PI,
+        speed: 15,
+        xSpeed: Math.cos(0.5 / 2 * Math.PI  * -1) * 15,
+        ySpeed: Math.sin(0.5 / 2 * Math.PI * -1) * 15,
 
         bounce(dir) {
             if (dir === "x"){
@@ -90,7 +92,10 @@ window.onload = () => {
         function checkPaddleCol() {
             if (ball.yPos + ball.radius >= paddle.yPos && ball.yPos - ball.radius <= paddle.yPos + paddle.height && ball.ySpeed > 0) {
                 if (ball.xPos + ball.radius >= paddle.xPos && ball.xPos - ball.radius <= paddle.xPos + paddle.width) {
-                    ball.bounce("y");
+                    ball.angle = ((ball.xPos - ball.radius - paddle.xPos) / paddle.width) / 2 * Math.PI;
+                    ball.xSpeed = Math.cos(ball.angle + 1) * -ball.speed;
+                    ball.ySpeed = Math.sin(ball.angle + 1) * -ball.speed;
+                    console.log(ball.angle);
                 }
             }
         }
