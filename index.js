@@ -16,7 +16,15 @@ window.onload = () => {
         xPos: 10,
         yPos: canvas.height - 10,
         xSpeed: 5,
-        ySpeed: -5
+        ySpeed: -5,
+
+        bounce(dir) {
+            if (dir === "x"){
+                this.xSpeed *= -1;
+            } else if (dir === "y") {
+                this.ySpeed *= -1;
+            }
+        }
     }
 
     function Brick(x, y) {
@@ -75,30 +83,39 @@ window.onload = () => {
     }
 
     function checkCollisions() {
-        if (ball.xPos - ball.radius < 0 || ball.xPos + ball.radius > canvas.width) {
-            ball.xSpeed *= -1;
-        }
-        if (ball.yPos - ball.radius < 0 /*|| ball.yPos + ball.radius > canvas.height*/) {
-            ball.ySpeed *= -1;
+        checkWallCol();
+        checkBrickCol();
+        checkPaddleCol();
+
+        function checkPaddleCol() {
+            if (ball.yPos + ball.radius >= paddle.yPos && ball.yPos - ball.radius <= paddle.yPos + paddle.height && ball.ySpeed > 0) {
+                if (ball.xPos + ball.radius >= paddle.xPos && ball.xPos - ball.radius <= paddle.xPos + paddle.width) {
+                    ball.bounce("y");
+                }
+            }
         }
 
-        bricks.forEach(b => {
-            if (b.isActive == false) {
-                return;
-            }
-            if (
-                ball.xPos + ball.radius > b.xPos &&
-                ball.xPos - ball.radius < b.xPos + b.width &&
-                ball.yPos + ball.radius > b.yPos &&
-                ball.yPos - ball.radius < b.yPos + b.height) {
-                b.isActive = false;
-                ball.ySpeed *= -1;
-            }
-        });
+        function checkBrickCol() {
+            bricks.forEach(b => {
+                if (b.isActive == false) {
+                    return;
+                }
+                if (ball.xPos + ball.radius > b.xPos &&
+                    ball.xPos - ball.radius < b.xPos + b.width &&
+                    ball.yPos + ball.radius > b.yPos &&
+                    ball.yPos - ball.radius < b.yPos + b.height) {
+                    b.isActive = false;
+                    ball.bounce("y");
+                }
+            });
+        }
 
-        if (ball.yPos + ball.radius >= paddle.yPos && ball.yPos - ball.radius <= paddle.yPos + paddle.height && ball.ySpeed > 0) {
-            if (ball.xPos + ball.radius >= paddle.xPos && ball.xPos - ball.radius <= paddle.xPos + paddle.width) {
-                ball.ySpeed *= -1;
+        function checkWallCol() {
+            if (ball.xPos - ball.radius < 0 || ball.xPos + ball.radius > canvas.width) {
+                ball.bounce("x");
+            }
+            if (ball.yPos - ball.radius < 0) {
+                ball.bounce("y");
             }
         }
     }
