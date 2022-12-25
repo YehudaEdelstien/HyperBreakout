@@ -8,7 +8,7 @@ window.onload = () => {
         xPos: 0,
         yPos: canvas.height - 15,
         height: 8,
-        width: 60
+        width: 80
     }
 
     const ball = {
@@ -55,7 +55,7 @@ window.onload = () => {
     }
 
     let brickFallTimer = 0;
-    const brickFallSpeed = 0.2;
+    const brickFallSpeed = 0.1;
     // input
     const mousePos = {
         x: canvas.width / 2,
@@ -126,9 +126,15 @@ window.onload = () => {
         function checkWallCol() {
             if (ball.xPos - ball.radius < 0 || ball.xPos + ball.radius > canvas.width) {
                 ball.bounce("x");
+                if (ball.xPos - ball.radius < 0) {
+                    ball.xPos = ball.radius;
+                } else {
+                    ball.xPos = canvas.width - ball.radius;
+                }
             }
             if (ball.yPos - ball.radius < 0) {
                 ball.bounce("y");
+                ball.yPos = ball.radius;
             }
         }
     }
