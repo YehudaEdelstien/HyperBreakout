@@ -8,7 +8,7 @@ window.onload = () => {
         xPos: 0,
         yPos: canvas.height - 15,
         height: 8,
-        width: 60
+        width: 250//60
     }
 
     const ball = {
@@ -17,11 +17,11 @@ window.onload = () => {
         yPos: canvas.height - 5,
         angle: 0.5 / 2 * Math.PI,
         speed: 15,
-        xSpeed: Math.cos(0.5 / 2 * Math.PI  * -1) * 15,
+        xSpeed: Math.cos(0.5 / 2 * Math.PI * -1) * 15,
         ySpeed: Math.sin(0.5 / 2 * Math.PI * -1) * 15,
 
         bounce(dir) {
-            if (dir === "x"){
+            if (dir === "x") {
                 this.xSpeed *= -1;
             } else if (dir === "y") {
                 this.ySpeed *= -1;
@@ -31,28 +31,34 @@ window.onload = () => {
 
     function Brick(x, y) {
         this.xPos = x + 2;
-        this.yPos = y + 1;
+        this.yPos = y;
         this.width = 47;
         this.height = 27;
-        this.isActive = true;
     }
 
     const brickYGap = 30;
     const brickXGap = 50;
+    const startRows = 4;
 
     const bricks = [];
+    
+    for (let i = startRows - (canvas.height / brickYGap); i < startRows; i++) {
+        bricks.push(brickRow(i * brickYGap));
+    }
 
-    for (let i = -10; i < 4; i++) {
-        for (let j = 0; j < 5; j++) {
-            bricks.push(new Brick(j * brickXGap, i * brickYGap))
+    function brickRow(y) {
+        const arr = [];
+        for (i = 0; i < canvas.width / brickXGap; i++) {
+            arr.push(new Brick(i * brickXGap, y))
         }
+        return arr;
     }
 
     let brickFallTimer = 0;
     const brickFallSpeed = 0.2;
     // input
     const mousePos = {
-        x: 0,
+        x: canvas.width / 2,
         y: 0
     }
 
@@ -95,24 +101,26 @@ window.onload = () => {
                     ball.angle = ((ball.xPos - ball.radius - paddle.xPos) / paddle.width) / 2 * Math.PI;
                     ball.xSpeed = Math.cos(ball.angle + 1) * -ball.speed;
                     ball.ySpeed = Math.sin(ball.angle + 1) * -ball.speed;
-                    console.log(ball.angle);
                 }
             }
         }
 
         function checkBrickCol() {
-            bricks.forEach(b => {
-                if (b.isActive == false) {
-                    return;
+            for(let row of bricks){
+                for (let i in row) {
+                    if (ball.xPos + ball.radius > row[i].xPos &&
+                        ball.xPos - ball.radius < row[i].xPos + row[i].width &&
+                        ball.yPos + ball.radius > row[i].yPos &&
+                        ball.yPos - ball.radius < row[i].yPos + row[i].height) {
+                        row.splice(i, 1);
+                        if (row.length === 0) {
+                            bricks.splice(bricks.indexOf(row), 1);
+                            bricks.unshift(brickRow(bricks[0][0].yPos - brickYGap));
+                        }
+                        ball.bounce("y");
+                    }
                 }
-                if (ball.xPos + ball.radius > b.xPos &&
-                    ball.xPos - ball.radius < b.xPos + b.width &&
-                    ball.yPos + ball.radius > b.yPos &&
-                    ball.yPos - ball.radius < b.yPos + b.height) {
-                    b.isActive = false;
-                    ball.bounce("y");
-                }
-            });
+            }
         }
 
         function checkWallCol() {
@@ -124,6 +132,7 @@ window.onload = () => {
             }
         }
     }
+
 
     function updatePaddle() {
         if (mousePos.x < 0 + (paddle.width / 2)) {
@@ -145,17 +154,19 @@ window.onload = () => {
     }
 
     function updateBricks() {
-        bricks.forEach(b => {
-            if (b.isActive) {
-                drawBrick(b.xPos, b.yPos, b.width, b.height);
-            }
-        });
-
         brickFallTimer += brickFallSpeed;
-        if (brickFallTimer >= 1){
-            bricks.forEach(b => b.yPos++)
+        if (brickFallTimer >= 1) {
+            bricks.forEach(r => {
+                r.forEach(b => b.yPos++);
+            })
             brickFallTimer--;
         }
+
+        bricks.forEach(r => {
+            r.forEach(b => {
+                drawBrick(b.xPos, b.yPos, b.width, b.height);
+            })
+        });
     }
 
     function mainLoop() {
