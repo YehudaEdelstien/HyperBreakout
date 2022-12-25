@@ -8,7 +8,7 @@ window.onload = () => {
         xPos: 0,
         yPos: canvas.height - 15,
         height: 8,
-        width: 250//60
+        width: 60
     }
 
     const ball = {
@@ -16,7 +16,7 @@ window.onload = () => {
         xPos: canvas.width / 2,
         yPos: canvas.height - 5,
         angle: 0.5 / 2 * Math.PI,
-        speed: 15,
+        speed: 12,
         xSpeed: Math.cos(0.5 / 2 * Math.PI * -1) * 15,
         ySpeed: Math.sin(0.5 / 2 * Math.PI * -1) * 15,
 
