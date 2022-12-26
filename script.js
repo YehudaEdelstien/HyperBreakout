@@ -2,6 +2,9 @@ window.onload = () => {
     /** @type {HTMLCanvasElement} */
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
+    const startScreen = document.getElementById("startScreen");
+
+    startScreen.addEventListener("click", startGame)
 
     //game elements
     const paddle = {
@@ -56,6 +59,7 @@ window.onload = () => {
 
     let brickFallTimer = 0;
     const brickFallSpeed = 0.1;
+
     // input
     const mousePos = {
         x: canvas.width / 2,
@@ -183,5 +187,12 @@ window.onload = () => {
         requestAnimationFrame(mainLoop);
     }
 
-    mainLoop();
+    function startGame() {
+        startScreen.style.display = "none";
+        mainLoop();
+    }
+
+    function endGame() {
+        
+    }
 }
