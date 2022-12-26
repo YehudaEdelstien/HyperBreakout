@@ -6,6 +6,11 @@ window.onload = () => {
 
     startScreen.addEventListener("click", startGame)
 
+    //Game Variables
+    let gameIsRunning = false;
+    let score = 0;
+    let highScore = 0;
+    
     //game elements
     const paddle = {
         xPos: 0,
@@ -29,6 +34,12 @@ window.onload = () => {
             } else if (dir === "y") {
                 this.ySpeed *= -1;
             }
+        },
+
+        reset() {
+            this.angle = 0.5 / 2 * Math.PI;
+            this.xSpeed = Math.cos(0.5 / 2 * Math.PI * -1) * 15;
+            this.ySpeed = Math.sin(0.5 / 2 * Math.PI * -1) * 15;
         }
     }
 
@@ -43,12 +54,15 @@ window.onload = () => {
     const brickXGap = 50;
     const startRows = 4;
 
-    const bricks = [];
+    let bricks = [];
     
-    for (let i = startRows - (canvas.height / brickYGap); i < startRows; i++) {
-        bricks.push(brickRow(i * brickYGap));
+    function generateBoard() {
+        bricks = [];
+        for (let i = startRows - (canvas.height / brickYGap); i < startRows; i++) {
+            bricks.push(brickRow(i * brickYGap));
+        }
+    
     }
-
     function brickRow(y) {
         const arr = [];
         for (i = 0; i < canvas.width / brickXGap; i++) {
@@ -140,6 +154,10 @@ window.onload = () => {
                 ball.bounce("y");
                 ball.yPos = ball.radius;
             }
+
+            if (ball.yPos + ball.radius > canvas.height) {
+                endGame();
+            }
         }
     }
 
@@ -181,18 +199,28 @@ window.onload = () => {
 
     function mainLoop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         updatePaddle();
-        updateBall();
-        updateBricks();
+
+        if (gameIsRunning){
+            updateBall();
+            updateBricks();
+        }
+            
         requestAnimationFrame(mainLoop);
     }
 
     function startGame() {
         startScreen.style.display = "none";
-        mainLoop();
+        generateBoard();
+        ball.reset();
+        gameIsRunning = true;
+    }
+    
+    function endGame() {
+        startScreen.style.display = "flex";
+        gameIsRunning = false;
     }
 
-    function endGame() {
-        
-    }
+    mainLoop();
 }
