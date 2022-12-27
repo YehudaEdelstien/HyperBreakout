@@ -3,30 +3,50 @@ window.onload = () => {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const startScreen = document.getElementById("startScreen");
+    const scoreDisplay = document.getElementById("score");
+    const highScoreDisplay = document.getElementById("highScore");
 
     startScreen.addEventListener("click", startGame)
 
     //Game Variables
     let gameIsRunning = false;
-    let score = 0;
-    let highScore = 0;
-    
+
+    const score = {
+        currentScore: 0,
+        highScore: 0,
+
+        increase() {
+            this.currentScore++;
+            let str = "" + this.currentScore;
+            str = str.padStart(3, '0');
+            scoreDisplay.innerHTML = str;
+            if (this.currentScore >= this.highScore) {
+                this.highScore = this.currentScore;
+                highScoreDisplay.innerHTML = str;
+            }
+        },
+        
+        reset() {
+            this.currentScore = 0;
+            scoreDisplay.innerHTML = "000";
+        }
+    }
     //game elements
     const paddle = {
         xPos: 0,
         yPos: canvas.height - 15,
         height: 8,
-        width: 80
+        width: 70
     }
 
     const ball = {
         radius: 10,
-        xPos: canvas.width / 2,
-        yPos: canvas.height - 5,
-        angle: 0.5 / 2 * Math.PI,
-        speed: 12,
-        xSpeed: Math.cos(0.5 / 2 * Math.PI * -1) * 15,
-        ySpeed: Math.sin(0.5 / 2 * Math.PI * -1) * 15,
+        speed: 8,
+        xPos: 0,
+        yPos: 0,
+        angle: 0,
+        xSpeed: 10,
+        ySpeed: 10,
 
         bounce(dir) {
             if (dir === "x") {
@@ -38,8 +58,10 @@ window.onload = () => {
 
         reset() {
             this.angle = 0.5 / 2 * Math.PI;
-            this.xSpeed = Math.cos(0.5 / 2 * Math.PI * -1) * 15;
-            this.ySpeed = Math.sin(0.5 / 2 * Math.PI * -1) * 15;
+            this.xSpeed = Math.cos(0.5 / 2 * Math.PI * -1) * this.speed;
+            this.ySpeed = Math.sin(0.5 / 2 * Math.PI * -1) * this.speed;
+            this.xPos = canvas.width / 2;
+            this.yPos = canvas.height - 10
         }
     }
 
@@ -81,7 +103,7 @@ window.onload = () => {
     }
 
     document.onmousemove = (e) => {
-        mousePos.x = e.clientX - canvas.offsetLeft;
+        mousePos.x = e.clientX - canvas.getBoundingClientRect().left;
     }
 
     //Game functions
@@ -136,6 +158,7 @@ window.onload = () => {
                             bricks.unshift(brickRow(bricks[0][0].yPos - brickYGap));
                         }
                         ball.bounce("y");
+                        score.increase();
                     }
                 }
             }
@@ -206,7 +229,6 @@ window.onload = () => {
             updateBall();
             updateBricks();
         }
-            
         requestAnimationFrame(mainLoop);
     }
 
@@ -214,6 +236,7 @@ window.onload = () => {
         startScreen.style.display = "none";
         generateBoard();
         ball.reset();
+        score.reset();
         gameIsRunning = true;
     }
     

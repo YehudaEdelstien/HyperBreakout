@@ -7,6 +7,10 @@ body {
     background-color: #eeeeee;
 }
 
+p, div {
+    user-select: none;
+}
+
 canvas {
     background-color: cornsilk;
     margin: auto;
@@ -21,14 +25,14 @@ canvas:hover {
 }
 
 #gameWindow {
-    width: 500px;
+    position: relative;
+    width: 560px;
     height: 500px;
     border: 2px solid black;
     margin: 50px auto;
 }
 
 #startScreen {
-    background-color: grey;
     opacity: 0.5;
     margin: auto;
     display: flex;
@@ -52,4 +56,18 @@ canvas:hover {
     0%   {opacity: 0.5;}
     50%  {opacity: 0.2;}
     100% {opacity: 0.5;}
-  }
+}
+
+#scoreDiv {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#scoreDiv .scoreNums {
+    font-size: 50px;
+    font-weight: initial;
+}
